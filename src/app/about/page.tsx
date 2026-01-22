@@ -213,9 +213,6 @@ export default function AboutPage() {
       </section>
 
 
-
-
-
       {/* 4. Qualification Certificates */}
 
       <section className="py-24 bg-white overflow-hidden">
