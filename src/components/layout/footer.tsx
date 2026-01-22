@@ -27,7 +27,7 @@ export function Footer() {
           <div>
             <h4 className="mb-4 text-lg font-semibold text-white">产品中心</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/products?cat=black-plaster" className="hover:text-white transition-colors">黑膏药系列</Link></li>
+              <li><Link href="/products?cat=rubber-plaster" className="hover:text-white transition-colors">透气橡皮膏</Link></li>
               <li><Link href="/products?cat=hydrogel" className="hover:text-white transition-colors">水凝胶系列</Link></li>
               <li><Link href="/products?cat=patch" className="hover:text-white transition-colors">热敷贴系列</Link></li>
               <li><Link href="/products?cat=kids" className="hover:text-white transition-colors">儿科护理系列</Link></li>

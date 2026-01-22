@@ -22,7 +22,7 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
       <div className="container mx-auto px-4 max-w-4xl mt-12">
         <div className="mb-10 text-center">
           <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-            膏药贴牌代加工需要注意哪些坑？老司机带你避雷
+            橡皮膏贴牌代加工需要注意哪些坑？老司机带你避雷
           </h1>
           <div className="flex items-center justify-center gap-6 text-sm text-slate-500">
             <span className="flex items-center gap-1">
@@ -51,9 +51,9 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
             className="w-full rounded-xl my-8 shadow-lg"
           />
 
-          <h3>二、 药量配比：不仅仅是“黑”</h3>
+          <h3>二、 涂布工艺：不仅仅是“粘”</h3>
           <p>
-            传统黑膏药之所以黑，是因为熬制工艺。现在很多劣质膏药通过添加色素变黑，实际上药效微乎其微。正规厂家的配方都是经过实验室反复验证的...
+            传统橡皮膏容易氧化变硬、致敏率高。老同桌采用第二代激光打孔技术，在保证粘性适中的同时，大大提高了透气性。正规厂家的配方都是经过实验室反复验证的...
           </p>
 
           <h3>三、 资质陷阱：一类还是二类？</h3>

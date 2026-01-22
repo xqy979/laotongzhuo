@@ -1,5 +1,6 @@
 import { HeroSection } from '@/components/home/hero-section';
 import { FeatureSection } from '@/components/home/feature-section';
+import { ProcessFlow } from '@/components/home/process-flow';
 import { ProductShowcase } from '@/components/home/product-showcase';
 import { StatsSection } from '@/components/home/stats-section';
 import { ArrowRight, Phone } from 'lucide-react';
@@ -11,6 +12,8 @@ export default function Home() {
       <HeroSection />
       <StatsSection />
       <FeatureSection />
+      
+      <ProcessFlow />
       
       {/* Advantage / Why Choose Us Section */}
       <section className="py-24 bg-white">
@@ -42,7 +45,7 @@ export default function Home() {
                   安徽老同桌生物科技有限公司，坐落于中医药文化底蕴深厚的安徽，是一家集研发、生产、销售为一体的现代化高新技术企业。
                 </p>
                 <p>
-                  我们拥有<span className="font-bold text-slate-900">两大现代化生产基地</span>，占地面积30000余平方米，引进国际先进的涂布、分割、包装自动化生产线。
+                  我们拥有<span className="font-bold text-slate-900">现代化生产基地</span>，占地面积30000余平方米，引进国际先进的涂布、分割、包装自动化生产线。
                 </p>
                 <p>
                   <span className="font-bold text-slate-900">核心优势</span>：独家透皮吸收技术，药效更持久；自主研发实验室，可根据客户需求快速打样；一类/二类医疗器械文号齐全，让您销售无忧。

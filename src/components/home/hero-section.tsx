@@ -23,7 +23,7 @@ export function HeroSection() {
               <span className="text-primary">专注膏药贴剂</span> 研发生产
             </h1>
             <p className="text-lg text-slate-600 mb-8 max-w-lg leading-relaxed">
-              一站式OEM/ODM代加工服务，包括黑膏药、水凝胶、热敷贴等多种剂型。
+              一站式OEM/ODM代加工服务，包括激光微孔透气橡皮膏、水凝胶、热敷贴等多种剂型。
               日产百万贴，急单可接，免费打样，为您打造爆款产品。
             </p>
             

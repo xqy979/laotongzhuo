@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const categories = [
   { id: 'hot', name: '热销推荐' },
-  { id: 'black', name: '黑膏药系列' },
+  { id: 'rubber', name: '透气橡皮膏系列' },
   { id: 'gel', name: '水凝胶系列' },
   { id: 'patch', name: '热敷贴系列' },
 ];
@@ -21,10 +21,10 @@ const products = [
   },
   {
     id: 2,
-    name: '特效黑膏药',
-    category: 'black',
+    name: '激光微孔透气橡皮膏',
+    category: 'rubber',
     image: '/images/product-sample.png', // Placeholder
-    tag: '传统工艺',
+    tag: '二代激光工艺',
   },
   {
     id: 3,

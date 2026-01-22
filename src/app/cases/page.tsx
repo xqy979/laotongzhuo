@@ -10,7 +10,7 @@ const cases = [
     client: '某知名连锁大药房',
     logo: 'Pharmacy Chain',
     title: '连锁药房自有品牌定制',
-    tags: ['OEM贴牌', '黑膏药', '线下渠道'],
+    tags: ['OEM贴牌', '橡皮膏', '线下渠道'],
     desc: '客户拥有3000+家线下门店，需要开发一款高性价比的远红外贴以提升自有品牌利润率。我们提供了全套文号授权和包装设计，产品上架后单月销售额突破500万。',
     result: ['单月销额500万+', '覆盖3000+门店'],
     image: '/images/product-sample.png',

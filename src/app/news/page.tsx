@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 const newsList = [
   {
     id: 1,
-    title: '膏药贴牌代加工需要注意哪些坑？老司机带你避雷',
+    title: '橡皮膏贴牌代加工需要注意哪些坑？老司机带你避雷',
     summary: '很多刚入行想要做膏药品牌的客户，往往会被低价吸引。本文将从基布选择、药量配比、资质授权三个方面，为您详细解析OEM代工中的常见陷阱...',
     date: '2025-10-24',
     author: '老同桌研发部',
@@ -48,7 +48,7 @@ const hotNews = [
   { id: 1, title: '2026年膏药市场趋势预测报告' },
   { id: 3, title: '远红外筋骨消痛贴的市场前景分析' },
   { id: 1, title: '膏药贴牌代加工避坑指南' },
-  { id: 5, title: '如何辨别黑膏药的优劣？' },
+  { id: 5, title: '如何辨别优质橡皮膏的优劣？' },
 ];
 
 export default function NewsPage() {

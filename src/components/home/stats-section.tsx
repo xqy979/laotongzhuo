@@ -7,7 +7,7 @@ export function StatsSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-white">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
           <div>
-            <div className="text-5xl font-extrabold mb-2">36<span className="text-2xl ml-1 opacity-80">年</span></div>
+            <div className="text-5xl font-extrabold mb-2">10<span className="text-2xl ml-1 opacity-80">年</span></div>
             <div className="text-lg opacity-80 font-medium">行业经验沉淀</div>
           </div>
           <div>

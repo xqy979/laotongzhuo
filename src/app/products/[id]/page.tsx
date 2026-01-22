@@ -10,16 +10,16 @@ const getProduct = (id: string) => {
   return {
     id,
     name: '老同桌远红外筋骨消痛贴',
-    category: '黑膏药系列',
+    category: '透气橡皮膏系列',
     model: 'LTZ-001',
     specs: '8贴/盒（7cm×10cm）',
     license: '皖械注准2021209xxxx',
     manufacturer: '安徽老同桌生物科技有限公司',
     images: ['/images/product-sample.png', '/images/product-sample.png', '/images/product-sample.png'],
     features: [
-      '独特远红外陶瓷粉配方，能够产生热效应，促进血液循环。',
+      '独特远红外陶瓷粉配方，配合二代激光微孔技术，透气性好。',
       '医用级压敏胶，致敏率低，粘性适中，撕下不伤肤。',
-      '透气无纺布基材，皮肤自由呼吸，夏天贴也不闷热。',
+      '透气橡皮膏基材，皮肤自由呼吸，夏天贴也不闷热。',
       '经典8贴装，性价比高，不仅适合药房销售，也适合居家常备。'
     ],
     scenes: ['颈椎酸痛', '肩周不适', '腰肌劳损', '关节疼痛', '运动跌打'],

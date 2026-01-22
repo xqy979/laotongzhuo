@@ -39,8 +39,8 @@ const services = [
 
 const productTypes = [
   {
-    name: '传统黑膏药',
-    desc: '载药量大，药效持久，适合骨科痛症市场。',
+    name: '激光微孔透气橡皮膏',
+    desc: '二代激光微孔技术，透气性好，粘性适中，不易过敏，适合各类痛症贴剂。',
     image: '/images/product-sample.png', // Placeholder
   },
   {

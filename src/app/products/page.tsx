@@ -19,7 +19,7 @@ type Product = {
 // Mock Data
 const categories = [
   { id: 'all', name: '全部分类' },
-  { id: 'black-plaster', name: '黑膏药系列' },
+  { id: 'rubber-plaster', name: '透气橡皮膏系列' },
   { id: 'hydrogel', name: '水凝胶系列' },
   { id: 'heating-patch', name: '热敷贴系列' },
   { id: 'pediatric', name: '儿科护理' },
@@ -29,11 +29,11 @@ const allProducts: Product[] = [
   {
     id: '1',
     name: '老同桌远红外筋骨消痛贴',
-    category: 'black-plaster',
+    category: 'rubber-plaster',
     image: '/images/product-sample.png',
-    tags: ['药房爆款', '二类器械', '高利润'],
+    tags: ['药房爆款', '二类器械', '激光打孔'],
     specs: '8贴/盒',
-    summary: '经典黑膏药工艺与现代远红外技术结合，深层渗透，快速止痛。适用于颈肩腰腿痛的辅助治疗。',
+    summary: '采用二代激光微孔透气橡皮膏基材，透气不闷汗，不过敏。配合远红外粉体，深层渗透，快速止痛。',
   },
   {
     id: '2',
@@ -73,12 +73,12 @@ const allProducts: Product[] = [
   },
   {
     id: '6',
-    name: '传统手工黑膏药布',
-    category: 'black-plaster',
+    name: '微孔透气橡皮膏基布',
+    category: 'rubber-plaster',
     image: '/images/product-sample.png',
-    tags: ['老中医配方', '防渗漏', '粘性强'],
+    tags: ['激光打孔', '高透气', '致敏率低'],
     specs: '100张/包',
-    summary: '专为诊所、理疗馆供应的空贴基布。采用优质加厚无纺布，防渗防侧漏。',
+    summary: '专为诊所、理疗馆供应的空贴基布。采用优质橡皮膏涂布，均匀激光微孔，透气性极佳。',
   },
 ];
 

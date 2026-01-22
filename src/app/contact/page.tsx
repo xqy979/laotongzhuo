@@ -27,7 +27,7 @@ export default function ContactPage() {
                 期待与您的合作
               </h2>
               <p className="text-slate-600 text-lg leading-relaxed">
-                安徽老同桌生物科技有限公司拥有两大现代化生产基地，欢迎各位客户莅临厂区实地考察。我们提供免费接送服务（需提前预约）。
+                安徽老同桌生物科技有限公司拥有现代化生产基地，欢迎各位客户莅临厂区实地考察。我们提供免费接送服务（需提前预约）。
               </p>
             </div>
 

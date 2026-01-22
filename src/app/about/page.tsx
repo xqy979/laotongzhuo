@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Award, CheckCircle2, Factory, FlaskConical, Truck, Users } from 'lucide-react';
+import { Award, CheckCircle2, Factory, FlaskConical, Truck, Users, ClipboardList, ArrowRight, XCircle } from 'lucide-react';
 import Image from 'next/image';
 
 const milestones = [
@@ -63,7 +63,7 @@ export default function AboutPage() {
                   公司拥有两大生产厂区，总占地面积30余亩。我们深知质量是企业的生命线，因此不惜重金引进了国内领先的<strong>热熔胶涂布机、水凝胶涂布机、自动分切机、四边封包装机</strong>等自动化设备百余台。
                 </p>
                 <p>
-                  目前，公司已形成黑膏药、水凝胶、热敷贴、冷敷贴四大核心产品线，日产量高达<strong>100万贴</strong>，能够快速响应客户的大宗急单需求。
+                  目前，公司已形成透气橡皮膏、水凝胶、热敷贴、冷敷贴四大核心产品线，日产量高达<strong>100万贴</strong>，能够快速响应客户的大宗急单需求。
                 </p>
               </div>
               
@@ -92,76 +92,132 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 3. Factory Strength Showcase (Tabs or Grid) */}
+      {/* 3. Production Equipment Showcase */}
       <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900">实地探厂</h2>
-            <p className="mt-4 text-slate-600">眼见为实，带您走进我们的透明化车间</p>
+            <h2 className="text-3xl font-bold text-slate-900">生产设备与工艺</h2>
+            <p className="mt-4 text-slate-600">工欲善其事，必先利其器。我们选用业内顶尖的生产设备，只为做好每一贴膏药。</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1: Production */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
-              <div className="h-64 bg-slate-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-                  <Factory className="h-10 w-10 text-white mb-3" />
-                  <h3 className="text-xl font-bold text-white">自动化生产车间</h3>
-                </div>
+          {/* Core Equipment Highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <FlaskConical className="w-24 h-24 text-primary" />
               </div>
-              <div className="p-6">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  引进德国进口涂布技术，全自动四边封包装机，确保每一贴膏药克重精准、密封严实。只有标准化的设备，才能生产出标准化的好产品。
-                </p>
-                <div className="mt-4 flex gap-2 flex-wrap">
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">自动涂布</span>
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">激光模切</span>
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <span className="font-bold text-primary text-xl">01</span>
                 </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">基质制备</h3>
+                <p className="text-sm text-slate-500 mb-4">沈阳杰飞 · 捏合搅拌机</p>
+                <p className="text-slate-600">
+                  采用高扭矩精密捏合机，确保橡胶、氧化锌与药粉充分融合，基质细腻无颗粒，药效释放更均匀。
+                </p>
               </div>
             </div>
 
-            {/* Card 2: R&D */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
-              <div className="h-64 bg-slate-200 relative overflow-hidden">
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-                  <FlaskConical className="h-10 w-10 text-white mb-3" />
-                  <h3 className="text-xl font-bold text-white">研发与质检中心</h3>
-                </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Factory className="w-24 h-24 text-primary" />
               </div>
-              <div className="p-6">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  配备高效液相色谱仪等专业检测设备，从原材料入库到成品出厂，经过12道严苛质检。确保产品不致敏、药效足、粘性好。
-                </p>
-                <div className="mt-4 flex gap-2 flex-wrap">
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">配方实验室</span>
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">留样室</span>
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <span className="font-bold text-primary text-xl">02</span>
                 </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">精密涂布</h3>
+                <p className="text-sm text-slate-500 mb-4">沈阳杰飞 · 涂布机</p>
+                <p className="text-slate-600">
+                  全自动涂布生产线，克重控制精准（误差&lt;0.1g）。支持不同厚度定制，涂层均匀平整，不渗漏。
+                </p>
               </div>
             </div>
 
-            {/* Card 3: Storage */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
-              <div className="h-64 bg-slate-200 relative overflow-hidden">
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-                  <Truck className="h-10 w-10 text-white mb-3" />
-                  <h3 className="text-xl font-bold text-white">仓储物流中心</h3>
-                </div>
+            <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-primary/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <CheckCircle2 className="w-24 h-24 text-primary" />
               </div>
-              <div className="p-6">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  5000平米现代化立体仓库，常备库存充足。与多家物流公司深度合作，确保订单当日生产，次日发货，为您的生意争分夺秒。
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
+                  <span className="font-bold text-white text-xl">03</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">微孔成型</h3>
+                <p className="text-sm text-slate-500 mb-4">黄石龙昌 · 打孔切片机</p>
+                <p className="text-slate-600">
+                  <span className="text-primary font-bold">核心环节：</span>采用二代打孔技术，孔径均匀微小。既保证了透气性，又不影响药效渗透，彻底解决传统膏药闷痒问题。
                 </p>
-                <div className="mt-4 flex gap-2 flex-wrap">
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">恒温库</span>
-                  <span className="px-2 py-1 bg-slate-100 text-xs text-slate-600 rounded">一件代发</span>
-                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Full Equipment List Table */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-slate-500" /> 
+                主要生产设备清单
+              </h3>
+              <span className="text-xs text-slate-400">更新于 2026.01</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    <th className="px-6 py-3 font-medium">序号</th>
+                    <th className="px-6 py-3 font-medium">设备名称</th>
+                    <th className="px-6 py-3 font-medium">品牌/厂商</th>
+                    <th className="px-6 py-3 font-medium">设备编号</th>
+                    <th className="px-6 py-3 font-medium">用途类别</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {[
+                    { id: 1, name: '压胶机', factory: '山东博山鑫成机械', code: 'SC001', type: '原料处理' },
+                    { id: 2, name: '捏合（搅拌）机', factory: '沈阳杰飞设备制造', code: 'SC002', type: '原料处理' },
+                    { id: 3, name: '涂布机', factory: '沈阳杰飞设备制造', code: 'SC003', type: '核心生产' },
+                    { id: 4, name: '切断床', factory: '沈阳杰飞设备制造', code: 'SC004', type: '核心生产' },
+                    { id: 5, name: '打孔切片机', factory: '黄石龙昌机械', code: 'SC005', type: '核心生产', highlight: true },
+                    { id: 6, name: '缝纫机', factory: '中国飞跃设备制造', code: 'SC006', type: '辅助加工' },
+                    { id: 7, name: '热风恒温箱', factory: '沈阳杰飞设备制造', code: 'SC007', type: '环境控制' },
+                    { id: 8, name: '封口机', factory: '温州鼎业包装机械', code: 'SC008', type: '包装物流' },
+                    { id: 9, name: '打包机', factory: '上海美捷伦包装机械', code: 'SC010', type: '包装物流' },
+                    { id: 10, name: '空调', factory: '珠海格力电器', code: 'SC011', type: '环境控制' },
+                    { id: 11, name: '塑封机', factory: '上海耀宇仪器仪表', code: 'SC012', type: '包装物流' },
+                    { id: 12, name: '包装机', factory: '温州高尚包装机械', code: 'SC013', type: '包装物流' },
+                  ].map((item) => (
+                    <tr key={item.id} className={`hover:bg-slate-50 transition-colors ${item.highlight ? 'bg-primary/5' : ''}`}>
+                      <td className="px-6 py-4 text-slate-500">{item.id}</td>
+                      <td className="px-6 py-4 font-medium text-slate-900">
+                        {item.name}
+                        {item.highlight && <span className="ml-2 text-[10px] bg-primary text-white px-1.5 py-0.5 rounded">关键</span>}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">{item.factory}</td>
+                      <td className="px-6 py-4 font-mono text-slate-400 text-xs">{item.code}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          item.type === '核心生产' ? 'bg-amber-100 text-amber-700' :
+                          item.type === '包装物流' ? 'bg-blue-100 text-blue-700' :
+                          'bg-slate-100 text-slate-600'
+                        }`}>
+                          {item.type}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </section>
 
+
+
+
+
       {/* 4. Qualification Certificates */}
+
       <section className="py-24 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
