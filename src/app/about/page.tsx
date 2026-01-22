@@ -36,7 +36,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block py-1 px-3 rounded-full bg-primary/20 text-primary-foreground border border-primary/30 text-sm font-semibold mb-6 backdrop-blur-sm">
+            <span className="inline-block py-1 px-3 rounded-full bg-primary text-white border border-primary-foreground/20 text-sm font-semibold mb-6 shadow-lg shadow-primary/30">
               专注贴剂研发生产10年+
             </span>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
