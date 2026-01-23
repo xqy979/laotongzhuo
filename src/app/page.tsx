@@ -2,6 +2,7 @@ import { HeroSection } from '@/components/home/hero-section';
 import { FeatureSection } from '@/components/home/feature-section';
 import { ProcessFlow } from '@/components/home/process-flow';
 import { ProductShowcase } from '@/components/home/product-showcase';
+import { EfficacySection } from '@/components/home/efficacy-section';
 import { StatsSection } from '@/components/home/stats-section';
 import { ArrowRight, Phone } from 'lucide-react';
 import Link from 'next/link';
@@ -62,6 +63,7 @@ export default function Home() {
       </section>
 
       <ProductShowcase />
+      <EfficacySection />
 
       {/* CTA Section */}
       <section className="bg-slate-900 py-24 relative overflow-hidden">
