@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Edit, Trash2, FolderTree, Package, Plus } from "lucide-react";
 import {
   DataTable,
@@ -22,16 +21,9 @@ interface Category {
   _count?: { products: number };
 }
 
-interface CategoriesClientProps {
-  initialCategories: Category[];
-}
-
-export default function CategoriesClient({
-  initialCategories,
-}: CategoriesClientProps) {
-  const router = useRouter();
-  const [categories, setCategories] = useState(initialCategories);
-  const [loading, setLoading] = useState(false);
+export default function CategoriesClient() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // 弹窗状态
   const [showAddModal, setShowAddModal] = useState(false);
@@ -62,6 +54,11 @@ export default function CategoriesClient({
       setLoading(false);
     }
   }, []);
+
+  // 页面加载时获取数据
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   // 列配置
   const columns: Column<Category>[] = [

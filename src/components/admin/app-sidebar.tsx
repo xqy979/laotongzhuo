@@ -20,6 +20,7 @@ import {
   Handshake,
   Users,
   Settings,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -128,8 +129,23 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/">
+            <SidebarMenuButton
+              asChild
+              tooltip="导出数据库"
+              onClick={() => {
+                // 触发下载
+                window.location.href = "/api/admin/export";
+              }}
+            >
+              <button type="button" className="w-full">
+                <Download />
+                <span>导出数据库</span>
+              </button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="查看前台">
+              <Link href="/" target="_blank">
                 <Send />
                 <span>查看前台网站</span>
               </Link>

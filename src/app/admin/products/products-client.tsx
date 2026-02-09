@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Edit, Trash2, Eye, EyeOff } from "lucide-react";
 import {
   DataTable,
@@ -10,6 +10,7 @@ import {
   Column,
   ActionButton,
   Filter,
+  PaginationInfo,
 } from "@/components/admin/data-table";
 import { ConfirmModal } from "@/components/ui/modal";
 
@@ -31,24 +32,28 @@ interface Category {
   name: string;
 }
 
-interface ProductsClientProps {
-  initialProducts: Product[];
-  categories: Category[];
-}
-
-export default function ProductsClient({
-  initialProducts,
-  categories,
-}: ProductsClientProps) {
+export default function ProductsClient() {
   const router = useRouter();
-  const [products, setProducts] = useState(initialProducts);
+  const searchParams = useSearchParams();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(
+    parseInt(searchParams.get("page") || "1", 10),
+  );
+  const [pageSize, setPageSize] = useState(
+    parseInt(searchParams.get("pageSize") || "10", 10),
+  );
+  const [loading, setLoading] = useState(true);
+
   const [filters, setFilters] = useState<Record<string, string>>({
-    search: "",
-    categoryId: "",
-    status: "",
+    search: searchParams.get("search") || "",
+    categoryId: searchParams.get("categoryId") || "",
+    status: searchParams.get("status") || "",
   });
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState("");
 
   // 筛选配置
@@ -152,46 +157,139 @@ export default function ProductsClient({
     },
   ];
 
+  // 获取分类列表
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/categories");
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data);
+      }
+    } catch (err) {
+      console.error("获取分类失败:", err);
+    }
+  }, []);
+
+  // 获取产品列表
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("page", page.toString());
+      params.set("pageSize", pageSize.toString());
+
+      if (filters.search) params.set("search", filters.search);
+      if (filters.categoryId) params.set("categoryId", filters.categoryId);
+      if (filters.status) params.set("status", filters.status);
+
+      const res = await fetch(`/api/admin/products?${params.toString()}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        // 支持分页和非分页 API 响应
+        if (Array.isArray(data)) {
+          // 客户端筛选
+          let filtered = data;
+          if (filters.search) {
+            const searchLower = filters.search.toLowerCase();
+            filtered = filtered.filter((p: Product) =>
+              p.name.toLowerCase().includes(searchLower),
+            );
+          }
+          if (filters.categoryId) {
+            filtered = filtered.filter(
+              (p: Product) => p.category.id === filters.categoryId,
+            );
+          }
+          if (filters.status) {
+            const isPublished = filters.status === "published";
+            filtered = filtered.filter(
+              (p: Product) => p.isPublished === isPublished,
+            );
+          }
+          setProducts(filtered);
+          setTotal(filtered.length);
+        } else {
+          setProducts(data.products || data.data || []);
+          setTotal(data.total || 0);
+        }
+      }
+    } catch (err) {
+      console.error("获取产品失败:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize, filters]);
+
+  // 更新 URL
+  const updateUrl = useCallback(
+    (
+      newPage: number,
+      newPageSize: number,
+      newFilters: Record<string, string>,
+    ) => {
+      const params = new URLSearchParams();
+
+      if (newPage > 1) params.set("page", newPage.toString());
+      if (newPageSize !== 10) params.set("pageSize", newPageSize.toString());
+      if (newFilters.search) params.set("search", newFilters.search);
+      if (newFilters.categoryId)
+        params.set("categoryId", newFilters.categoryId);
+      if (newFilters.status) params.set("status", newFilters.status);
+
+      const queryString = params.toString();
+      router.push(queryString ? `?${queryString}` : "?", { scroll: false });
+    },
+    [router],
+  );
+
+  // 页面加载获取数据
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [page, pageSize, fetchProducts]);
+
+  // 页面切换
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    updateUrl(newPage, pageSize, filters);
+  };
+
+  // 每页数量切换
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(1);
+    updateUrl(1, newSize, filters);
+  };
+
   // 筛选处理
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   // 搜索处理
-  const handleSearch = useCallback(() => {
-    // 客户端筛选
-    let filtered = initialProducts;
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(searchLower),
-      );
-    }
-
-    if (filters.categoryId) {
-      filtered = filtered.filter((p) => p.category.id === filters.categoryId);
-    }
-
-    if (filters.status) {
-      const isPublished = filters.status === "published";
-      filtered = filtered.filter((p) => p.isPublished === isPublished);
-    }
-
-    setProducts(filtered);
-  }, [filters, initialProducts]);
+  const handleSearch = () => {
+    setPage(1);
+    updateUrl(1, pageSize, filters);
+    fetchProducts();
+  };
 
   // 重置筛选
   const handleReset = () => {
-    setFilters({ search: "", categoryId: "", status: "" });
-    setProducts(initialProducts);
+    const emptyFilters = { search: "", categoryId: "", status: "" };
+    setFilters(emptyFilters);
+    setPage(1);
+    updateUrl(1, pageSize, emptyFilters);
   };
 
   // 删除处理
   const handleDelete = async () => {
     if (!deleteTarget) return;
 
-    setLoading(true);
+    setDeleteLoading(true);
     setError("");
 
     try {
@@ -201,7 +299,7 @@ export default function ProductsClient({
 
       if (res.ok) {
         setDeleteTarget(null);
-        router.refresh();
+        fetchProducts();
       } else {
         const data = await res.json();
         setError(data.error || "删除失败");
@@ -209,15 +307,23 @@ export default function ProductsClient({
     } catch {
       setError("删除失败，请重试");
     } finally {
-      setLoading(false);
+      setDeleteLoading(false);
     }
+  };
+
+  // 分页信息
+  const pagination: PaginationInfo = {
+    page,
+    pageSize,
+    total,
+    totalPages: Math.ceil(total / pageSize),
   };
 
   return (
     <div>
       <PageHeader
         title="产品管理"
-        count={products.length}
+        count={total}
         countLabel="个产品"
         addButton={{
           label: "添加产品",
@@ -238,11 +344,15 @@ export default function ProductsClient({
         columns={columns}
         actions={actions}
         keyField="id"
+        loading={loading}
         emptyMessage="暂无产品数据"
         emptyAction={{
           label: "添加第一个产品",
           href: "/admin/products/new",
         }}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
 
       <ConfirmModal
@@ -258,7 +368,7 @@ export default function ProductsClient({
         }
         confirmText="删除"
         danger
-        loading={loading}
+        loading={deleteLoading}
       />
     </div>
   );
