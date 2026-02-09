@@ -1,16 +1,35 @@
-import { Package, Newspaper, Eye, TrendingUp, Briefcase } from "lucide-react";
+import {
+  Package,
+  Newspaper,
+  Eye,
+  Briefcase,
+  MessageSquare,
+  Clock,
+  User,
+  Phone,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
 async function getStats() {
-  const [productCount, newsCount, caseCount, publishedProducts, publishedNews] =
-    await Promise.all([
-      prisma.product.count(),
-      prisma.news.count(),
-      prisma.case.count(),
-      prisma.product.count({ where: { isPublished: true } }),
-      prisma.news.count({ where: { isPublished: true } }),
-    ]);
+  const [
+    productCount,
+    newsCount,
+    caseCount,
+    publishedProducts,
+    publishedNews,
+    messageCount,
+    unreadMessageCount,
+  ] = await Promise.all([
+    prisma.product.count(),
+    prisma.news.count(),
+    prisma.case.count(),
+    prisma.product.count({ where: { isPublished: true } }),
+    prisma.news.count({ where: { isPublished: true } }),
+    prisma.message.count(),
+    prisma.message.count({ where: { isRead: false } }),
+  ]);
 
   return {
     productCount,
@@ -18,11 +37,23 @@ async function getStats() {
     caseCount,
     publishedProducts,
     publishedNews,
+    messageCount,
+    unreadMessageCount,
   };
 }
 
+async function getRecentMessages() {
+  return prisma.message.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+}
+
 export default async function AdminDashboard() {
-  const stats = await getStats();
+  const [stats, recentMessages] = await Promise.all([
+    getStats(),
+    getRecentMessages(),
+  ]);
 
   const cards = [
     {
@@ -48,6 +79,15 @@ export default async function AdminDashboard() {
       icon: Briefcase,
       color: "bg-purple-500",
       href: "/admin/cases",
+    },
+    {
+      title: "留言咨询",
+      value: stats.messageCount,
+      subtext: `${stats.unreadMessageCount} 条未读`,
+      icon: MessageSquare,
+      color: stats.unreadMessageCount > 0 ? "bg-red-500" : "bg-amber-500",
+      href: "/admin/messages",
+      highlight: stats.unreadMessageCount > 0,
     },
   ];
 
@@ -87,7 +127,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-8">
         <h2 className="text-lg font-bold text-slate-900 mb-4">快捷操作</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link
@@ -120,6 +160,105 @@ export default async function AdminDashboard() {
             <span className="text-sm font-medium text-slate-700">预览网站</span>
           </Link>
         </div>
+      </div>
+
+      {/* Recent Messages */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center">
+              <MessageSquare className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">最新留言</h2>
+              <p className="text-sm text-slate-500">
+                {stats.unreadMessageCount > 0 ? (
+                  <span className="text-red-500 font-medium">
+                    {stats.unreadMessageCount} 条未读
+                  </span>
+                ) : (
+                  "所有留言已处理"
+                )}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/messages"
+            className="inline-flex items-center gap-1 text-primary hover:text-red-700 text-sm font-medium transition-colors"
+          >
+            查看全部
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {recentMessages.length === 0 ? (
+          <div className="p-8 text-center text-slate-500">暂无留言信息</div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {recentMessages.map((message) => (
+              <Link
+                key={message.id}
+                href="/admin/messages"
+                className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors"
+              >
+                {/* 未读标记 */}
+                <div className="flex-shrink-0">
+                  {!message.isRead ? (
+                    <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                      <User className="h-5 w-5 text-red-500" />
+                    </div>
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
+                      <User className="h-5 w-5 text-slate-400" />
+                    </div>
+                  )}
+                </div>
+
+                {/* 信息内容 */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className={`font-medium ${!message.isRead ? "text-slate-900" : "text-slate-600"}`}
+                    >
+                      {message.name}
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                      {message.type}
+                    </span>
+                    {!message.isRead && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-600">
+                        未读
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <Phone className="h-3.5 w-3.5" />
+                      {message.phone}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      {new Date(message.createdAt).toLocaleString("zh-CN", {
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  {message.content && (
+                    <p className="text-sm text-slate-400 mt-1 truncate">
+                      {message.content}
+                    </p>
+                  )}
+                </div>
+
+                {/* 箭头 */}
+                <ChevronRight className="h-5 w-5 text-slate-300 flex-shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
