@@ -235,3 +235,57 @@ export function PromptModal({
     </Modal>
   );
 }
+
+// 表单弹窗
+interface FormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  children: React.ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+  loading?: boolean;
+  size?: "sm" | "md" | "lg";
+}
+
+export function FormModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  children,
+  confirmText = "确定",
+  cancelText = "取消",
+  loading = false,
+  size = "md",
+}: FormModalProps) {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size={size}
+      footer={
+        <>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+          >
+            {loading ? "处理中..." : confirmText}
+          </button>
+        </>
+      }
+    >
+      {children}
+    </Modal>
+  );
+}

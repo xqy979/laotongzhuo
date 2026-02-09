@@ -20,26 +20,21 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, slug, description } = body;
+    const { name, description, order } = body;
 
     if (!name) {
       return NextResponse.json({ error: "分类名称是必填项" }, { status: 400 });
     }
 
-    // 确保 slug 唯一
-    const finalSlug = slug || name.toLowerCase().replace(/[^a-z0-9]/g, "-");
-    const existingCategory = await prisma.category.findUnique({
-      where: { slug: finalSlug },
-    });
-    if (existingCategory) {
-      return NextResponse.json({ error: "URL 别名已被使用" }, { status: 400 });
-    }
+    // 自动生成唯一 slug（使用时间戳确保唯一性）
+    const slug = `category-${Date.now()}`;
 
     const category = await prisma.category.create({
       data: {
         name,
-        slug: finalSlug,
+        slug,
         description,
+        order: order || 0,
       },
     });
 
