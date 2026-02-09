@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
@@ -11,6 +11,7 @@ import {
   X,
   Download,
   CalendarDays,
+  Loader2,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { cn } from "@/lib/utils";
@@ -45,18 +46,17 @@ interface Stats {
   unhandled: number;
 }
 
-export default function MessagesClient({
-  initialMessages,
-  initialStats,
-}: {
-  initialMessages: Message[];
-  initialStats: Stats;
-}) {
+export default function MessagesClient() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [filteredMessages, setFilteredMessages] =
-    useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
+  const [stats, setStats] = useState<Stats>({
+    total: 0,
+    unread: 0,
+    unhandled: 0,
+  });
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // 筛选状态
   const [filters, setFilters] = useState({
@@ -70,6 +70,27 @@ export default function MessagesClient({
   // 弹窗状态
   const [deleteTarget, setDeleteTarget] = useState<Message | null>(null);
   const [handleTarget, setHandleTarget] = useState<Message | null>(null);
+
+  // 获取数据
+  const fetchMessages = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/messages");
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data.messages || []);
+        setStats(data.stats || { total: 0, unread: 0, unhandled: 0 });
+      }
+    } catch (error) {
+      console.error("获取留言失败:", error);
+    } finally {
+      setInitialLoading(false);
+    }
+  }, []);
+
+  // 初始加载
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   // 应用筛选
   useEffect(() => {
@@ -111,7 +132,7 @@ export default function MessagesClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isRead: true }),
       });
-      router.refresh();
+      fetchMessages();
     } catch (error) {
       console.error("标记已读失败:", error);
     }
@@ -131,7 +152,7 @@ export default function MessagesClient({
         }),
       });
       setHandleTarget(null);
-      router.refresh();
+      fetchMessages();
     } catch (error) {
       console.error("标记已处理失败:", error);
     } finally {
@@ -147,7 +168,7 @@ export default function MessagesClient({
         method: "DELETE",
       });
       setDeleteTarget(null);
-      router.refresh();
+      fetchMessages();
     } catch (error) {
       console.error("删除失败:", error);
     } finally {
@@ -205,6 +226,14 @@ export default function MessagesClient({
     XLSX.writeFile(wb, fileName);
   };
 
+  if (initialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-4 mb-4">
@@ -214,21 +243,21 @@ export default function MessagesClient({
             <h1 className="text-2xl font-bold text-slate-900">留言管理</h1>
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <span className="bg-slate-100 px-2 py-0.5 rounded-full text-slate-700 font-medium">
-                {initialStats.total}
+                {stats.total}
               </span>
               条记录
             </div>
 
-            {(initialStats.unread > 0 || initialStats.unhandled > 0) && (
+            {(stats.unread > 0 || stats.unhandled > 0) && (
               <div className="flex items-center gap-2 text-xs">
-                {initialStats.unread > 0 && (
+                {stats.unread > 0 && (
                   <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
-                    未读 {initialStats.unread}
+                    未读 {stats.unread}
                   </span>
                 )}
-                {initialStats.unhandled > 0 && (
+                {stats.unhandled > 0 && (
                   <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                    待处理 {initialStats.unhandled}
+                    待处理 {stats.unhandled}
                   </span>
                 )}
               </div>

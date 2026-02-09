@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -7,43 +8,108 @@ import {
   ShieldCheck,
   Truck,
   Phone,
+  Loader2,
 } from "lucide-react";
-import { useState } from "react";
 
-// Mock data fetcher
-const getProduct = (id: string) => {
-  // In a real app, fetch from API
-  return {
-    id,
-    name: "老同桌远红外筋骨消痛贴",
-    category: "透气橡皮膏系列",
-    model: "LTZ-001",
-    specs: "8贴/盒（7cm×10cm）",
-    license: "皖械注准2021209xxxx",
-    manufacturer: "安徽老同桌生物科技有限公司",
-    images: [
-      "/images/product-sample.png",
-      "/images/product-sample.png",
-      "/images/product-sample.png",
-    ],
-    features: [
-      "独特远红外陶瓷粉配方，配合二代激光微孔技术，透气性好。",
-      "医用级压敏胶，致敏率低，粘性适中，撕下不伤肤。",
-      "透气橡皮膏基材，皮肤自由呼吸，夏天贴也不闷热。",
-      "经典8贴装，性价比高，不仅适合药房销售，也适合居家常备。",
-    ],
-    scenes: ["颈椎酸痛", "肩周不适", "腰肌劳损", "关节疼痛", "运动跌打"],
+type Product = {
+  id: string;
+  name: string;
+  slug: string | null;
+  specs: string | null;
+  image: string | null;
+  images: string | null;
+  summary: string | null;
+  description: string | null;
+  features: string | null;
+  scenes: string | null;
+  tags: string | null;
+  license: string | null;
+  isPublished: boolean;
+  isHot: boolean;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
   };
 };
 
 export default function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const product = getProduct(params.id);
+  const resolvedParams = use(params);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
+
+  // 获取产品详情
+  const fetchProduct = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/products/${resolvedParams.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setProduct(data);
+
+        // 获取相关产品
+        if (data.category?.slug) {
+          const relatedRes = await fetch(
+            `/api/products?category=${data.category.slug}`,
+          );
+          if (relatedRes.ok) {
+            const relatedData = await relatedRes.json();
+            setRelatedProducts(
+              relatedData.filter((p: Product) => p.id !== data.id).slice(0, 3),
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error("获取产品失败:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
+
+  // 解析 JSON 字段
+  const parseJSON = (str: string | null): string[] => {
+    if (!str) return [];
+    try {
+      return JSON.parse(str);
+    } catch {
+      return [];
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-slate-50 min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="bg-slate-50 min-h-screen flex flex-col items-center justify-center">
+        <p className="text-slate-500 text-lg mb-4">产品不存在</p>
+        <Link href="/products" className="text-primary hover:underline">
+          返回产品列表
+        </Link>
+      </div>
+    );
+  }
+
+  const images = parseJSON(product.images);
+  const productImages =
+    images.length > 0 ? images : product.image ? [product.image] : [];
+  const features = parseJSON(product.features);
+  const scenes = parseJSON(product.scenes);
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
@@ -57,7 +123,7 @@ export default function ProductDetailPage({
             <ArrowLeft className="h-4 w-4 mr-1" /> 返回产品列表
           </Link>
           <span className="text-slate-300">|</span>
-          <span>{product.category}</span>
+          <span>{product.category.name}</span>
           <span className="text-slate-300">/</span>
           <span className="text-slate-900 font-medium">{product.name}</span>
         </div>
@@ -70,58 +136,72 @@ export default function ProductDetailPage({
             {/* Left: Image Gallery */}
             <div className="p-6 md:p-10 bg-slate-50 flex flex-col items-center">
               <div className="w-full aspect-square bg-white rounded-xl shadow-sm border border-slate-200 mb-4 overflow-hidden relative">
-                <img
-                  src={product.images[activeImg]}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-4 transition-all duration-300"
-                />
+                {productImages.length > 0 ? (
+                  <img
+                    src={productImages[activeImg]}
+                    alt={product.name}
+                    className="w-full h-full object-contain p-4 transition-all duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    暂无图片
+                  </div>
+                )}
                 <div className="absolute top-4 right-4 bg-primary text-white text-xs font-bold px-2 py-1 rounded">
                   正品保障
                 </div>
               </div>
-              <div className="flex gap-4 overflow-x-auto w-full pb-2">
-                {product.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImg(idx)}
-                    className={`w-20 h-20 rounded-lg border-2 bg-white flex-shrink-0 p-1 ${activeImg === idx ? "border-primary" : "border-slate-200 hover:border-slate-300"}`}
-                  >
-                    <img
-                      src={img}
-                      alt={`View ${idx}`}
-                      className="w-full h-full object-contain"
-                    />
-                  </button>
-                ))}
-              </div>
+              {productImages.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto w-full pb-2">
+                  {productImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImg(idx)}
+                      className={`w-20 h-20 rounded-lg border-2 bg-white flex-shrink-0 p-1 ${activeImg === idx ? "border-primary" : "border-slate-200 hover:border-slate-300"}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`View ${idx}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right: Product Info */}
             <div className="p-6 md:p-10 flex flex-col">
-              <div className="mb-2 text-sm font-semibold text-primary bg-primary/5 inline-block px-3 py-1 rounded-full self-start">
-                {product.license}
-              </div>
+              {product.license && (
+                <div className="mb-2 text-sm font-semibold text-primary bg-primary/5 inline-block px-3 py-1 rounded-full self-start">
+                  {product.license}
+                </div>
+              )}
               <h1 className="text-3xl font-bold text-slate-900 mb-6 leading-tight">
                 {product.name}
               </h1>
 
               <div className="space-y-4 mb-8">
+                {product.specs && (
+                  <div className="flex border-b border-slate-100 pb-3">
+                    <span className="w-24 text-slate-500">产品规格</span>
+                    <span className="font-medium text-slate-900">
+                      {product.specs}
+                    </span>
+                  </div>
+                )}
+                {product.summary && (
+                  <div className="flex border-b border-slate-100 pb-3">
+                    <span className="w-24 text-slate-500">适用范围</span>
+                    <span className="font-medium text-slate-900">
+                      {product.summary}
+                    </span>
+                  </div>
+                )}
                 <div className="flex border-b border-slate-100 pb-3">
-                  <span className="w-24 text-slate-500">产品规格</span>
+                  <span className="w-24 text-slate-500">所属分类</span>
                   <span className="font-medium text-slate-900">
-                    {product.specs}
-                  </span>
-                </div>
-                <div className="flex border-b border-slate-100 pb-3">
-                  <span className="w-24 text-slate-500">适用范围</span>
-                  <span className="font-medium text-slate-900">
-                    适用于因风寒湿邪引起的颈、肩、腰、腿等关节疼痛的辅助治疗。
-                  </span>
-                </div>
-                <div className="flex border-b border-slate-100 pb-3">
-                  <span className="w-24 text-slate-500">生产企业</span>
-                  <span className="font-medium text-slate-900">
-                    {product.manufacturer}
+                    {product.category.name}
                   </span>
                 </div>
               </div>
@@ -170,80 +250,106 @@ export default function ProductDetailPage({
         {/* Detailed Image Content (Long Scroll) */}
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <section className="bg-white rounded-2xl p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
-                产品卖点解析
-              </h2>
-              <div className="prose prose-slate max-w-none">
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none pl-0">
-                  {product.features.map((feature, idx) => (
-                    <li
-                      key={idx}
-                      className="flex gap-3 bg-slate-50 p-4 rounded-lg"
+            {features.length > 0 && (
+              <section className="bg-white rounded-2xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
+                  产品卖点解析
+                </h2>
+                <div className="prose prose-slate max-w-none">
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none pl-0">
+                    {features.map((feature, idx) => (
+                      <li
+                        key={idx}
+                        className="flex gap-3 bg-slate-50 p-4 rounded-lg"
+                      >
+                        <div className="min-w-[24px] h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">
+                          {idx + 1}
+                        </div>
+                        <span className="text-slate-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            )}
+
+            {scenes.length > 0 && (
+              <section className="bg-white rounded-2xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
+                  适用场景
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                  {scenes.map((scene) => (
+                    <div
+                      key={scene}
+                      className="text-center p-4 bg-slate-50 rounded-xl hover:bg-primary/5 transition-colors"
                     >
-                      <div className="min-w-[24px] h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">
-                        {idx + 1}
+                      <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 shadow-sm flex items-center justify-center text-2xl">
+                        🤒
                       </div>
-                      <span className="text-slate-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-
-            <section className="bg-white rounded-2xl p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
-                适用场景
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                {product.scenes.map((scene) => (
-                  <div
-                    key={scene}
-                    className="text-center p-4 bg-slate-50 rounded-xl hover:bg-primary/5 transition-colors"
-                  >
-                    <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 shadow-sm flex items-center justify-center text-2xl">
-                      🤒
+                      <span className="font-medium text-slate-700">
+                        {scene}
+                      </span>
                     </div>
-                    <span className="font-medium text-slate-700">{scene}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
+                  ))}
+                </div>
+              </section>
+            )}
 
-            <section className="bg-white rounded-2xl p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
-                产品实拍
-              </h2>
-              <div className="space-y-4">
-                <div className="aspect-video bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                  [此处放置产品细节长图1]
-                </div>
-                <div className="aspect-video bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                  [此处放置产品使用说明图2]
-                </div>
-              </div>
-            </section>
+            {product.description && (
+              <section className="bg-white rounded-2xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6 border-l-4 border-primary pl-4">
+                  产品详情
+                </h2>
+                <div
+                  className="prose prose-slate max-w-none"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              </section>
+            )}
           </div>
 
           {/* Sidebar: Recommendations */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
               <h3 className="font-bold text-slate-900 mb-4">相关产品推荐</h3>
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <Link href="#" key={i} className="flex gap-3 group">
-                    <div className="w-16 h-16 bg-slate-100 rounded-lg flex-shrink-0"></div>
-                    <div>
-                      <h4 className="font-medium text-slate-900 text-sm group-hover:text-primary transition-colors">
-                        艾草温灸贴（升级版）
-                      </h4>
-                      <p className="text-xs text-slate-500 mt-1">
-                        销量 10000+ 盒
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              {relatedProducts.length > 0 ? (
+                <div className="space-y-4">
+                  {relatedProducts.map((item) => (
+                    <Link
+                      href={`/products/${item.id}`}
+                      key={item.id}
+                      className="flex gap-3 group"
+                    >
+                      <div className="w-16 h-16 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                            无图
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900 text-sm group-hover:text-primary transition-colors">
+                          {item.name}
+                        </h4>
+                        {item.specs && (
+                          <p className="text-xs text-slate-500 mt-1">
+                            {item.specs}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-400 text-sm">暂无相关产品</p>
+              )}
               <Link
                 href="/products"
                 className="block w-full text-center py-3 mt-6 border border-slate-200 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"

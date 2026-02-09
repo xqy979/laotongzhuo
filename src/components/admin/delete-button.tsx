@@ -9,12 +9,14 @@ interface DeleteButtonProps {
   id: string;
   endpoint: string;
   itemName?: string;
+  onDeleted?: () => void;
 }
 
 export default function DeleteButton({
   id,
   endpoint,
   itemName = "此项",
+  onDeleted,
 }: DeleteButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,11 @@ export default function DeleteButton({
 
       if (res.ok) {
         setShowConfirm(false);
-        router.refresh();
+        if (onDeleted) {
+          onDeleted();
+        } else {
+          router.refresh();
+        }
       } else {
         const data = await res.json();
         setError(data.error || "删除失败");

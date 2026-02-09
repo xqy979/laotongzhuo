@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Save, Loader2, CheckCircle } from "lucide-react";
 
-interface SettingsClientProps {
-  initialSettings: Record<string, string>;
-}
-
-export default function SettingsClient({
-  initialSettings,
-}: SettingsClientProps) {
+export default function SettingsClient() {
   const defaultSettings = {
     siteName: "安徽老同桌生物科技有限公司",
     siteDescription: "专注膏药贴剂研发生产，提供一站式OEM/ODM代加工服务",
@@ -26,13 +20,34 @@ export default function SettingsClient({
     douyin: "",
   };
 
-  const [settings, setSettings] = useState({
-    ...defaultSettings,
-    ...initialSettings,
-  });
+  const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+
+  // 获取设置
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/settings");
+      if (res.ok) {
+        const data = await res.json();
+        setSettings({
+          ...defaultSettings,
+          ...data,
+        });
+      }
+    } catch (err) {
+      console.error("获取设置失败:", err);
+    } finally {
+      setInitialLoading(false);
+    }
+  }, []);
+
+  // 初始加载
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   // 更新设置值
   const updateSetting = (key: string, value: string) => {
@@ -66,6 +81,14 @@ export default function SettingsClient({
       setLoading(false);
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div>

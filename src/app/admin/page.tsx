@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import {
   Package,
   Newspaper,
@@ -8,52 +11,62 @@ import {
   User,
   Phone,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
 
-async function getStats() {
-  const [
-    productCount,
-    newsCount,
-    caseCount,
-    publishedProducts,
-    publishedNews,
-    messageCount,
-    unreadMessageCount,
-  ] = await Promise.all([
-    prisma.product.count(),
-    prisma.news.count(),
-    prisma.case.count(),
-    prisma.product.count({ where: { isPublished: true } }),
-    prisma.news.count({ where: { isPublished: true } }),
-    prisma.message.count(),
-    prisma.message.count({ where: { isRead: false } }),
-  ]);
-
-  return {
-    productCount,
-    newsCount,
-    caseCount,
-    publishedProducts,
-    publishedNews,
-    messageCount,
-    unreadMessageCount,
-  };
+interface Stats {
+  productCount: number;
+  newsCount: number;
+  caseCount: number;
+  publishedProducts: number;
+  publishedNews: number;
+  messageCount: number;
+  unreadMessageCount: number;
 }
 
-async function getRecentMessages() {
-  return prisma.message.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
+interface Message {
+  id: string;
+  name: string;
+  phone: string;
+  type: string;
+  content: string | null;
+  isRead: boolean;
+  isHandled: boolean;
+  createdAt: string;
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<Stats>({
+    productCount: 0,
+    newsCount: 0,
+    caseCount: 0,
+    publishedProducts: 0,
+    publishedNews: 0,
+    messageCount: 0,
+    unreadMessageCount: 0,
   });
-}
+  const [recentMessages, setRecentMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function AdminDashboard() {
-  const [stats, recentMessages] = await Promise.all([
-    getStats(),
-    getRecentMessages(),
-  ]);
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/dashboard");
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data.stats);
+        setRecentMessages(data.recentMessages || []);
+      }
+    } catch (error) {
+      console.error("获取仪表盘数据失败:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const cards = [
     {
@@ -90,6 +103,14 @@ export default async function AdminDashboard() {
       highlight: stats.unreadMessageCount > 0,
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div>

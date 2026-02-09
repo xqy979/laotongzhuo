@@ -4,11 +4,17 @@ import prisma from "@/lib/prisma";
 // GET /api/admin/news - 获取所有文章
 export async function GET() {
   try {
-    const news = await prisma.news.findMany({
-      include: { category: true },
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json(news);
+    const [news, categories] = await Promise.all([
+      prisma.news.findMany({
+        include: { category: true },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.newsCategory.findMany({
+        orderBy: { name: "asc" },
+      }),
+    ]);
+
+    return NextResponse.json({ news, categories });
   } catch (error) {
     return NextResponse.json({ error: "获取文章失败" }, { status: 500 });
   }

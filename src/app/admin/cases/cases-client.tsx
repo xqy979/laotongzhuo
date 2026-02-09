@@ -26,24 +26,19 @@ interface Case {
   updatedAt: string;
 }
 
-interface CasesClientProps {
-  initialData: {
-    cases: Case[];
-    total: number;
-    page: number;
-    pageSize: number;
-  };
-}
-
-export default function CasesClient({ initialData }: CasesClientProps) {
+export default function CasesClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [cases, setCases] = useState(initialData.cases);
-  const [total, setTotal] = useState(initialData.total);
-  const [page, setPage] = useState(initialData.page);
-  const [pageSize, setPageSize] = useState(initialData.pageSize);
-  const [loading, setLoading] = useState(false);
+  const [cases, setCases] = useState<Case[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(
+    parseInt(searchParams.get("page") || "1", 10),
+  );
+  const [pageSize, setPageSize] = useState(
+    parseInt(searchParams.get("pageSize") || "10", 10),
+  );
+  const [loading, setLoading] = useState(true);
 
   const [filters, setFilters] = useState<Record<string, string>>({
     search: searchParams.get("search") || "",
