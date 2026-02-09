@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import prisma from "@/lib/prisma";
 import CasesClient from "./cases-client";
 
@@ -10,7 +11,21 @@ interface PageProps {
   }>;
 }
 
-export default async function CasesPage({ searchParams }: PageProps) {
+function CasesLoading() {
+  return (
+    <div className="animate-pulse">
+      <div className="h-8 bg-slate-200 rounded w-1/4 mb-4"></div>
+      <div className="h-12 bg-slate-200 rounded mb-4"></div>
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="h-16 bg-slate-200 rounded"></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function CasesContent({ searchParams }: PageProps) {
   const params = await searchParams;
 
   const page = parseInt(params.page || "1", 10);
@@ -61,5 +76,13 @@ export default async function CasesPage({ searchParams }: PageProps) {
         pageSize,
       }}
     />
+  );
+}
+
+export default function CasesPage({ searchParams }: PageProps) {
+  return (
+    <Suspense fallback={<CasesLoading />}>
+      <CasesContent searchParams={searchParams} />
+    </Suspense>
   );
 }
