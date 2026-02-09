@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 管理员用户表
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String   @default("admin") // admin, editor
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 产品分类表
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+// 产品表
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  image       String?
+  images      String?  // JSON array of image URLs
+  tags        String?  // JSON array of tags
+  specs       String?  // 规格，如 "8贴/盒"
+  summary     String?  // 简介
+  description String?  // 详细描述（富文本）
+  features    String?  // JSON array of features
+  isPublished Boolean  @default(false)
+  isHot       Boolean  @default(false) // 是否热销
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 新闻分类表
+model NewsCategory {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articles  News[]
+}
+
+// 新闻文章表
+model News {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  categoryId  String
+  category    NewsCategory @relation(fields: [categoryId], references: [id])
+  summary     String?
+  content     String?      // 文章正文（富文本）
+  coverImage  String?
+  author      String?
+  views       Int          @default(0)
+  isPublished Boolean      @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// 合作案例表
+model Case {
+  id          String   @id @default(cuid())
+  client      String   // 客户名称
+  title       String
+  tags        String?  // JSON array
+  description String?
+  results     String?  // JSON array of results
+  image       String?
+  isPublished Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 网站设置表
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 留言申请表
+model Message {
+  id        String   @id @default(cuid())
+  name      String   // 姓名
+  phone     String   // 联系电话
+  type      String   @default("OEM代工") // 咨询类型：OEM代工、代理产品、其他合作
+  content   String?  // 留言内容
+  isRead    Boolean  @default(false) // 是否已读
+  isHandled Boolean  @default(false) // 是否已处理
+  note      String?  // 处理备注
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Phone, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Phone, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navigation = [
-  { name: '首页', href: '/' },
-  { name: '膏药OEM代工', href: '/oem' },
-  { name: '自有品牌产品', href: '/products' },
-  { name: '合作案例', href: '/cases' },
-  { name: '关于老同桌', href: '/about' },
-  // { name: '资讯中心', href: '/news' },
-  { name: '联系我们', href: '/contact' },
+  { name: "首页", href: "/" },
+  { name: "膏药OEM代工", href: "/oem" },
+  { name: "自有品牌产品", href: "/products" },
+  { name: "合作案例", href: "/cases" },
+  { name: "关于老同桌", href: "/about" },
+  { name: "资讯中心", href: "/news" },
+  { name: "联系我们", href: "/contact" },
 ];
 
 export function Header() {
@@ -27,21 +27,29 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-primary">安徽老同桌</span>
-              <span className="hidden text-sm font-medium text-muted-foreground md:block">| 专注膏药贴剂研发生产</span>
+              <span className="text-2xl font-bold text-primary">
+                安徽老同桌
+              </span>
+              <span className="hidden text-sm font-medium text-muted-foreground md:block">
+                | 专注膏药贴剂研发生产
+              </span>
             </Link>
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/" && pathname?.startsWith(item.href));
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary",
-                    isActive ? "text-primary font-bold" : "text-muted-foreground"
+                    isActive
+                      ? "text-primary font-bold"
+                      : "text-muted-foreground",
                   )}
                 >
                   {item.name}
@@ -74,22 +82,24 @@ export function Header() {
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden border-t border-border bg-white"
           >
             <div className="space-y-1 px-4 pb-3 pt-2">
               {navigation.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname?.startsWith(item.href));
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
                     className={cn(
                       "block rounded-md px-3 py-2 text-base font-medium transition-colors",
-                      isActive 
-                        ? "bg-primary/10 text-primary font-bold" 
-                        : "text-foreground hover:bg-primary/5 hover:text-primary"
+                      isActive
+                        ? "bg-primary/10 text-primary font-bold"
+                        : "text-foreground hover:bg-primary/5 hover:text-primary",
                     )}
                     onClick={() => setIsOpen(false)}
                   >
