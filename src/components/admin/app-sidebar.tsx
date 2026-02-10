@@ -74,11 +74,6 @@ const items = [
     url: "/admin/users",
     icon: Users,
   },
-  {
-    title: "网站设置",
-    url: "/admin/settings",
-    icon: Settings,
-  },
 ];
 
 export function AppSidebar() {
